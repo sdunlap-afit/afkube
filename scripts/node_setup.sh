@@ -17,9 +17,9 @@ sed -i '${s/$/ cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1/}' /boo
 
 ##### Add user to microk8s group #####
 
-usermod -a -G microk8s $USER
-mkdir -p ~/.kube
-chown -f -R $USER ~/.kube
+usermod -a -G microk8s pi
+mkdir -p /home/pi/.kube
+chown -f -R pi /home/pi/.kube
 
 reboot
 

@@ -15,6 +15,14 @@ if ! ping -c 1 $NODE_IP &> /dev/null; then
     exit 1
 fi
 
+
+# Check if node is already added to microk8s
+if microk8s kubectl get nodes | grep -q $NODE_IP; then
+    echo "Node is already part of the cluster"
+    exit 1
+fi
+
+
 # Prompt the user to make sure they want to do this
 read -p "Are you sure you want to add $NODE_IP to the cluster? (y/n) " -n 1 -r
 echo
@@ -23,25 +31,16 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     exit 1
 fi
 
-
-TEST="From the node you wish to join to this cluster, run the following:
-microk8s join 192.168.1.230:25000/92b2db237428470dc4fcfc4ebbd9dc81/2c0cb3284b05
-
-Use the '--worker' flag to join a node as a worker not running the control plane, eg:
-microk8s join 192.168.1.230:25000/92b2db237428470dc4fcfc4ebbd9dc81/2c0cb3284b05 --worker
-
-If the node you are adding is not reachable through the default interface you can use one of the following:
-microk8s join 192.168.1.230:25000/92b2db237428470dc4fcfc4ebbd9dc81/2c0cb3284b05
-microk8s join 10.23.209.1:25000/92b2db237428470dc4fcfc4ebbd9dc81/2c0cb3284b05
-microk8s join 172.17.0.1:25000/92b2db237428470dc4fcfc4ebbd9dc81/2c0cb3284b05"
-
-# JOIN_CMD=$(microk8s add-node | sed -n '2p')
+PW=$(<pw.txt)
 
 # Get second line from the add-node command
-JOIN_CMD=$(echo "$TEST" | sed -n '2p')
+JOIN_CMD=$(microk8s add-node | sed -n '2p')
+
+# Find and replace IP address with 10.10.10.1
+JOIN_CMD=$(echo $JOIN_CMD | sed "s/[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+/10.10.10.1/")
 
 echo "Join command: $JOIN_CMD"
 
 # Run the join command on the target node
-# ssh pi@$NODE_IP "$JOIN_CMD"
+ssh pi@$NODE_IP "sudo -S $JOIN_CMD"
 

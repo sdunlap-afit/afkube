@@ -1,4 +1,4 @@
-
+#!/bin/bash
 
 sudo apt update && sudo apt upgrade -y
 
@@ -15,4 +15,3 @@ sudo usermod -a -G microk8s $USER
 mkdir -p ~/.kube
 sudo chown -f -R $USER ~/.kube
 
-sudo reboot

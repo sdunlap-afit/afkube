@@ -6,6 +6,8 @@ Simple setup for microk8s
 # Main Controller setup
 
 ```bash
+sudo apt install -y sshpass
+
 sudo .scripts/node_setup.sh
 sudo reboot
 

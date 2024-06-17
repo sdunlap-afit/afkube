@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# Run with: 
+# Script expects to be run with sudo
+
+# Run remotely with: 
 # IP=10.10.10.10; scp node_setup.sh pi@$IP:~/ && ssh -t pi@$IP "sudo ~/node_setup.sh && rm ~/node_setup.sh"
 
 apt update 
@@ -18,4 +20,6 @@ sed -i '${s/$/ cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1/}' /boo
 usermod -a -G microk8s $USER
 mkdir -p ~/.kube
 chown -f -R $USER ~/.kube
+
+reboot
 

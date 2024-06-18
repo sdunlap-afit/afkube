@@ -21,5 +21,18 @@ usermod -a -G microk8s pi
 mkdir -p /home/pi/.kube
 chown -f -R pi /home/pi/.kube
 
+
+echo "{
+  "insecure-registries" : ["10.10.10.1:32000"]
+}" > /etc/docker/daemon.json
+
+mkdir -p /var/snap/microk8s/current/args/certs.d/10.10.10.1:32000
+touch /var/snap/microk8s/current/args/certs.d/10.10.10.1:32000/hosts.toml
+
+echo "server = \"http://10.10.10.1:32000\"
+
+[host.\"http://10.10.10.1:32000\"]
+capabilities = [\"pull\", \"resolve\"]" > /var/snap/microk8s/current/args/certs.d/10.10.10.1:32000/hosts.toml
+
 reboot
 

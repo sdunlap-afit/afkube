@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: py42
+spec:
+  containers:
+  - name: py42
+    image: 10.10.10.1:32000/py42:arm64  # Replace with your details
+    command: ["/usr/bin/echo", "Hello", "World"]  # Run a shell script
+    # args: ["-al /home/user/py42"]  # Replace with actual command and path

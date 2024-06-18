@@ -13,7 +13,10 @@ NAT is enabled
 
 
 ```bash
-sudo apt install -y sshpass
+sudo apt install -y sshpass docker.io
+
+sudo usermod -aG docker $USER
+
 
 sudo .scripts/node_setup.sh
 sudo reboot

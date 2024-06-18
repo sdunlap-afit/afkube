@@ -51,3 +51,4 @@ microk8s kubectl get pods
 microk8s kubectl apply -f test.yaml
 microk8s kubectl run --image=10.10.10.1:32000/py42:arm64 py42 -- /usr/bin/echo HELLO WORLD
 ```
+

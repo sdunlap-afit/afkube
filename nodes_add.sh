@@ -17,7 +17,7 @@ fi
 
 
 # Check if node is already added to microk8s
-if microk8s kubectl get nodes | grep -q $NODE_IP; then
+if microk8s kubectl get nodes -o wide | grep -q $NODE_IP; then
     echo "Node is already part of the cluster"
     exit 1
 fi

@@ -97,7 +97,7 @@ tar -xzf testsc.tar.gz
 ```bash
 smbclient //pinas/shared -U pi% -c "ls"
 
-smbclient //pinas/shared -U pi% -c 'put testsc.tar.gz'
-smbclient //pinas/shared -U pi% -c 'get test.txt'
+smbclient //pinas/shared -U pi% -c 'put run00.tar.gz'
+smbclient //pinas/shared -U pi% -c 'get testsc.tar.gz'
 
 ```

@@ -24,6 +24,36 @@ sudo reboot
 microk8s enable registry
 ```
 
+## DHCP/DNS
+
+```bash
+sudo apt install dnsmasq
+```
+
+
+`/etc/dnsmasq.conf`
+
+```
+interface = eth0
+no-dhcp-interface = wlan0
+
+# IPv4 address range and lease time
+dhcp-range = 10.10.10.10,10.10.10.240,24h
+
+domain-needed
+bogus-priv
+no-resolv
+cache-size=1000
+
+server=10.1.2.10
+server=10.1.2.2
+```
+
+```bash
+sudo /etc/init.d/dnsmasq restart
+```
+
+
 
 # Dockering
 
@@ -52,3 +82,22 @@ microk8s kubectl apply -f test.yaml
 microk8s kubectl run --image=10.10.10.1:32000/py42:arm64 py42 -- /usr/bin/echo HELLO WORLD
 ```
 
+
+# Samba Share
+
+Set up a smb shared drive on another pi (`pinas`)
+
+```bash
+tar -czf testsc.tar.gz testsc/
+
+tar -xzf testsc.tar.gz
+```
+
+
+```bash
+smbclient //pinas/shared -U pi% -c "ls"
+
+smbclient //pinas/shared -U pi% -c 'put testsc.tar.gz'
+smbclient //pinas/shared -U pi% -c 'get test.txt'
+
+```

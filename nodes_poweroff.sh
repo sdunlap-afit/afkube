@@ -8,3 +8,7 @@ while IFS= read -r IP; do
     echo "Rebooting $IP"
     echo $PW | ssh pi@$IP "sudo -S poweroff 2> /dev/null"
 done < ips.txt
+
+
+echo "Rebooting pinas"
+ssh pi@pinas "sudo poweroff"

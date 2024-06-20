@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  generateName: py42-
+  labels:
+    job-group: sim-job
+spec:
+  template:
+    metadata:
+      labels:
+        job-group: sim-job
+    spec:
+      containers:
+      - name: run-script
+        image: 10.10.10.1:32000/py42:123
+        # command: ["/bin/bash", "-c", "INDEX=$(shuf -i 1-100000 -n 1) && touch run$INDEX.txt && smbclient //pinas/shared -U pi% -c put \"run$INDEX.txt\""]
+        command: ["/bin/bash", "-c", "touch run00.txt && smbclient //pinas/shared -U pi% -c put run00.txt"]
+      restartPolicy: Never
+  backoffLimit: 1  # Optional: Define number of retries (here, 4 attempts)

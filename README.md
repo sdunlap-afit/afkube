@@ -65,8 +65,8 @@ These instructions assume you're building on the controller, but you should prob
 ```bash
 docker buildx build --platform linux/arm64 -t your-image-name:tag .
 
-docker tag your-image-name:tag 10.10.10.1:32000/your-image-name:arm64
-docker push 10.10.10.1:32000/your-image-name:arm64
+docker tag py42:latest 10.10.10.1:32000/py42:arm64
+docker push 10.10.10.1:32000/py42:arm64
 
 docker buildx build --platform linux/arm64 -t py42:arm64 .devcontainer/
 docker push 10.10.10.1:32000/py42:arm64
@@ -80,6 +80,12 @@ microk8s kubectl get events
 microk8s kubectl get pods
 microk8s kubectl apply -f test.yaml
 microk8s kubectl run --image=10.10.10.1:32000/py42:arm64 py42 -- /usr/bin/echo HELLO WORLD
+```
+
+Delete all jobs
+
+```bash
+microk8s kubectl delete jobs `microk8s kubectl get jobs -o custom-columns=:.metadata.name`
 ```
 
 

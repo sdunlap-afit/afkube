@@ -88,6 +88,14 @@ Delete all jobs
 microk8s kubectl delete jobs `microk8s kubectl get jobs -o custom-columns=:.metadata.name`
 ```
 
+# ReplicaSet
+
+```bash
+microk8s kubectl apply -f job.yaml 
+microk8s kubectl get rs
+microk8s kubectl delete rs py42
+```
+
 
 # Samba Share
 

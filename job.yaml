@@ -5,9 +5,10 @@ metadata:
   labels:
     job-group: sim-job
 spec:
-  completions: 1
-  parallelism: 20
-  ttlSecondsAfterFinished: 10
+  completions: 25
+  completionMode: Indexed
+  parallelism: 4
+  ttlSecondsAfterFinished: 100
   template:
     metadata:
       labels:
@@ -15,10 +16,8 @@ spec:
     spec:
       containers:
       - name: run-script
-        image: 10.10.10.1:32000/py42:240621
-        command: ["/bin/bash", "-c", "INDEX=$(shuf -i 1-100000 -n 1) && touch run$INDEX.txt && smbclient //10.10.10.15/shared -U pi% -c \"put run$INDEX.txt\""]
-        # command: ["/bin/bash", "-c", "touch run00.txt && smbclient //10.10.10.15/shared -U pi% -c \"put run00.txt\""]
-        # command: ["/bin/bash", "-c", "touch run00.txt && smbclient //10.10.10.15/shared -U pi% -c \"put run00.txt"]
+        image: 10.10.10.1:32000/py42:24062109
+        command: ["/bin/bash", "-c", "/home/user/py42/k8runner.sh"]
       restartPolicy: Never
   backoffLimit: 1  # Optional: Define number of retries (here, 4 attempts)
 

@@ -63,13 +63,11 @@ These instructions assume you're building on the controller, but you should prob
 
 
 ```bash
-docker buildx build --platform linux/arm64 -t your-image-name:tag .
+docker buildx build --platform linux/amd64 -t 10.10.10.1:32000/your-image-name:tag -f Dockerfile.k8 .
+docker buildx build --platform linux/arm64 -t 10.10.10.1:32000/your-image-name:tag -f Dockerfile.k8 .
+docker push 10.10.10.1:32000/py42:tag
 
-docker tag py42:latest 10.10.10.1:32000/py42:arm64
-docker push 10.10.10.1:32000/py42:arm64
-
-docker buildx build --platform linux/arm64 -t py42:arm64 .devcontainer/
-docker push 10.10.10.1:32000/py42:arm64
+# docker tag py42:latest 10.10.10.1:32000/py42:tag
 ```
 
 

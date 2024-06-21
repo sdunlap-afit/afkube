@@ -16,8 +16,11 @@ spec:
     spec:
       containers:
       - name: run-script
-        image: 10.10.10.1:32000/py42:24062109
+        image: 10.10.10.1:32000/py42:24062112
         command: ["/bin/bash", "-c", "/home/user/py42/k8runner.sh"]
+        resources:
+          requests:
+            cpu: 3
       restartPolicy: Never
   backoffLimit: 1  # Optional: Define number of retries (here, 4 attempts)
 

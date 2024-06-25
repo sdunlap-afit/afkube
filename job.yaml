@@ -5,28 +5,26 @@ metadata:
   labels:
     job-group: sim-job
 spec:
-  completions: 25
+  completions: 96
   completionMode: Indexed
-  parallelism: 4
+  parallelism: 24
   ttlSecondsAfterFinished: 100
   template:
     metadata:
       labels:
         job-group: sim-job
     spec:
+      volumes:
+      - name: pvc
+        persistentVolumeClaim:
+          claimName: py42-results
       containers:
       - name: run-script
-        image: 10.10.10.1:32000/py42:24062112
+        image: 192.168.237.101:32000/py42:24062502
         command: ["/bin/bash", "-c", "/home/user/py42/k8runner.sh"]
-        resources:
-          requests:
-            cpu: 3
+        volumeMounts:
+          - name: pvc
+            mountPath: /usr/share/py42/results
       restartPolicy: Never
-  backoffLimit: 1  # Optional: Define number of retries (here, 4 attempts)
-
-# parallelism: 10   py42-f5zdm   200/200       4m50s      4m50s
-# parallelism: 20   py42-r88vb   200/200       3m23s      3m26s
-# parallelism: 2    py42-tn2hb   20/20         87s        88s
-# parallelism: 4    py42-pxlwd   20/20         50s        51s
-# parallelism: 20   py42-2lwfl   20/20         19s        21s
-
+  backoffLimit: 1 
+  

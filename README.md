@@ -113,3 +113,14 @@ smbclient //pinas/shared -U pi% -c 'put run00.tar.gz'
 smbclient //pinas/shared -U pi% -c 'get testsc.tar.gz'
 
 ```
+
+
+# Snap config for docker
+
+`sudo vim /var/snap/docker/current/config/daemon.json`
+
+```json
+{
+  "insecure-registries" : ["192.168.237.101:32000"]
+}
+```

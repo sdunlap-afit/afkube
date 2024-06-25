@@ -1,0 +1,20 @@
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: py42-data
+provisioner: microk8s.io/hostpath
+reclaimPolicy: Delete
+parameters:
+  pvDir: /mnt/py42-data
+volumeBindingMode: WaitForFirstConsumer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: py42-results
+spec:
+  storageClassName: py42-data
+  accessModes: [ReadWriteOnce]
+  resources: { requests: { storage: 100Gi } }
+  

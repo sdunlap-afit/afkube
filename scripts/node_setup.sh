@@ -3,36 +3,47 @@
 # Script expects to be run with sudo
 
 # Run remotely with: 
-# IP=10.10.10.10; scp node_setup.sh pi@$IP:~/ && ssh -t pi@$IP "sudo ~/node_setup.sh && rm ~/node_setup.sh"
+# IP=192.168.237.103; scp node_setup.sh $USER@$IP:~/ && ssh -t $USER@$IP "sudo ~/node_setup.sh && rm ~/node_setup.sh"
+
+SRV_IP=192.168.237.101
+USER=user
 
 apt update 
 apt upgrade -y 
        
-snap install microk8s --classic
+# Taken care of by Ubuntu Server Install process
+# snap install microk8s --classic
 
 ##### Enable necessary features #####
 
-sed -i '${s/$/ cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1/}' /boot/firmware/cmdline.txt
+# This is a Pi thing
+# sed -i '${s/$/ cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1/}' /boot/firmware/cmdline.txt
 
 
 ##### Add user to microk8s group #####
 
-usermod -a -G microk8s pi
-mkdir -p /home/pi/.kube
-chown -f -R pi /home/pi/.kube
+usermod -a -G microk8s $USER
+mkdir -p /home/$USER/.kube
+chown -f -R $USER /home/$USER/.kube
 
+
+##### Add insecure registry to docker #####
 
 echo "{
-  "insecure-registries" : ["10.10.10.1:32000"]
-}" > /etc/docker/daemon.json
+    \"log-level\":        \"error\",
+    \"insecure-registries\":[\"192.168.237.101:32000\"]
+}" > /var/snap/docker/current/config/daemon.json
 
-mkdir -p /var/snap/microk8s/current/args/certs.d/10.10.10.1:32000
-touch /var/snap/microk8s/current/args/certs.d/10.10.10.1:32000/hosts.toml
 
-echo "server = \"http://10.10.10.1:32000\"
+##### Add insecure registry to microk8s #####
 
-[host.\"http://10.10.10.1:32000\"]
-capabilities = [\"pull\", \"resolve\"]" > /var/snap/microk8s/current/args/certs.d/10.10.10.1:32000/hosts.toml
+mkdir -p /var/snap/microk8s/current/args/certs.d/$SRV_IP:32000
+touch /var/snap/microk8s/current/args/certs.d/$SRV_IP:32000/hosts.toml
 
-reboot
+echo "server = \"http://$SRV_IP:32000\"
+
+[host.\"http://$SRV_IP:32000\"]
+capabilities = [\"pull\", \"resolve\"]" > /var/snap/microk8s/current/args/certs.d/$SRV_IP:32000/hosts.toml
+
+# reboot
 

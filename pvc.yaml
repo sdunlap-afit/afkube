@@ -15,6 +15,6 @@ metadata:
   name: py42-results
 spec:
   storageClassName: py42-data
-  accessModes: [ReadWriteOnce]
-  resources: { requests: { storage: 100Gi } }
+  accessModes: [ReadWriteMany]
+  resources: { requests: { storage: 10Gi } }
   

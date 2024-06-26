@@ -24,34 +24,15 @@ sudo reboot
 microk8s enable registry
 ```
 
-## DHCP/DNS
+## Helm setup
+
+To install and configure Helm:
 
 ```bash
-sudo apt install dnsmasq
+sudo snap install helm --classic
+kubectl config view --raw > ~/.kube/config
 ```
 
-
-`/etc/dnsmasq.conf`
-
-```
-interface = eth0
-no-dhcp-interface = wlan0
-
-# IPv4 address range and lease time
-dhcp-range = 10.10.10.10,10.10.10.240,24h
-
-domain-needed
-bogus-priv
-no-resolv
-cache-size=1000
-
-server=10.1.2.10
-server=10.1.2.2
-```
-
-```bash
-sudo /etc/init.d/dnsmasq restart
-```
 
 
 

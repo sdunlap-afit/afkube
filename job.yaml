@@ -22,6 +22,9 @@ spec:
       - name: run-script
         image: 192.168.237.101:32000/py42:24062502
         command: ["/bin/bash", "-c", "/home/user/py42/k8runner.sh"]
+        reserources:
+          requests:
+            cpu: "1"
         volumeMounts:
           - name: pvc
             mountPath: /usr/share/py42/results

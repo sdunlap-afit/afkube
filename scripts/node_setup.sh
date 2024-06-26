@@ -5,6 +5,8 @@
 # Run remotely with: 
 # IP=192.168.237.103; scp node_setup.sh $USER@$IP:~/ && ssh -t $USER@$IP "sudo ~/node_setup.sh && rm ~/node_setup.sh"
 
+# Static range - .2 - .99
+
 SRV_IP=192.168.237.101
 USER=user
 

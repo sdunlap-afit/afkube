@@ -5,9 +5,9 @@ metadata:
   labels:
     job-group: sim-job
 spec:
-  completions: 96
+  completions: 100
   completionMode: Indexed
-  parallelism: 24
+  parallelism: 10
   ttlSecondsAfterFinished: 100
   template:
     metadata:
@@ -22,6 +22,11 @@ spec:
       - name: run-script
         image: 192.168.237.101:32000/py42:24062502
         command: ["/bin/bash", "-c", "/home/user/py42/k8runner.sh"]
+        resources:
+          requests:
+            cpu: 1
+          limits:
+            cpu: 1
         volumeMounts:
           - name: pvc
             mountPath: /usr/share/py42/results

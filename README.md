@@ -3,27 +3,6 @@ Simple setup for microk8s
 
 
 
-# Main Controller setup
-
-Local LAN IP is expected to be 10.10.10.1
-
-DHCP server running on eth0 with ip range 10.10.10.10+
-
-NAT is enabled
-
-
-```bash
-sudo apt install -y sshpass docker.io
-
-sudo usermod -aG docker $USER
-
-
-sudo .scripts/node_setup.sh
-sudo reboot
-
-microk8s enable registry
-```
-
 ## Helm setup
 
 To install and configure Helm:
@@ -34,69 +13,11 @@ kubectl config view --raw > ~/.kube/config
 ```
 
 
-
-
-# Dockering
-
-The cluster is built with Raspberry Pi, so we need to build images for ARM64.
-
-These instructions assume you're building on the controller, but you should probably do it somewhere else and replace `10.10.10.1` with the controllers hostname or IP.
-
-
-```bash
-docker buildx build --platform linux/amd64 -t 10.10.10.1:32000/your-image-name:tag -f Dockerfile.k8 .
-docker buildx build --platform linux/arm64 -t 10.10.10.1:32000/your-image-name:tag -f Dockerfile.k8 .
-docker push 10.10.10.1:32000/py42:tag
-
-# docker tag py42:latest 10.10.10.1:32000/py42:tag
-```
-
-
-```bash
-microk8s kubectl delete pods py42
-microk8s kubectl get pods
-microk8s kubectl get events
-microk8s kubectl get pods
-microk8s kubectl apply -f test.yaml
-microk8s kubectl run --image=10.10.10.1:32000/py42:arm64 py42 -- /usr/bin/echo HELLO WORLD
-```
-
-Delete all jobs
-
-```bash
-microk8s kubectl delete jobs `microk8s kubectl get jobs -o custom-columns=:.metadata.name`
-```
-
-# ReplicaSet
-
-```bash
-microk8s kubectl apply -f job.yaml 
-microk8s kubectl get rs
-microk8s kubectl delete rs py42
-```
-
-
-# Samba Share
-
-Set up a smb shared drive on another pi (`pinas`)
-
-```bash
-tar -czf testsc.tar.gz testsc/
-
-tar -xzf testsc.tar.gz
-```
-
-
-```bash
-smbclient //pinas/shared -U pi% -c "ls"
-
-smbclient //pinas/shared -U pi% -c 'put run00.tar.gz'
-smbclient //pinas/shared -U pi% -c 'get testsc.tar.gz'
-
-```
-
-
 # Snap config for docker
+
+TODO: Once we have a Gitlab instance up and running, we should use that for the container registry. We may also want to get a cert for the cluster from Ryan (we'd have to configure the servers to trust our CA though).
+
+To allow docker to pull images from the local registry, add the following to the docker config file:
 
 `sudo vim /var/snap/docker/current/config/daemon.json`
 
@@ -104,4 +25,57 @@ smbclient //pinas/shared -U pi% -c 'get testsc.tar.gz'
 {
   "insecure-registries" : ["192.168.237.101:32000"]
 }
+```
+
+
+
+# Charmed Kubeflow
+
+This Kubeflow Platform is from Canonical but isn't working for me. Not sure if it's my version of Ubuntu, or what. I've tried it on 22.04 and 24.04 VMs, and 24.04 server.
+
+Kubeflow is a machine learning toolkit for Kubernetes. It provides a way to deploy production-ready ML pipelines. 
+
+Kubeflow has multiple maintained variants, two of which are for any Kubernetes cluster. I chose Canonical's Charmed Kubeflow, which is a Kubernetes operator that deploys Kubeflow on any Kubernetes cluster. The tutorial even uses microk8s.
+
+I followed this tutorial to get it up and running:
+
+https://charmed-kubeflow.io/docs/get-started-with-charmed-kubeflow
+
+
+```bash
+
+sudo apt update && sudo apt upgrade -y
+
+sudo snap install microk8s --classic #--channel=1.29/stable
+
+sudo usermod -a -G microk8s $USER
+newgrp microk8s
+mkdir ~/.kube
+sudo chown -f -R $USER ~/.kube
+microk8s config > ~/.kube/config
+
+# Depending on the microk8s version, dns may already be enabled
+microk8s disable dns
+# microk8s enable dns:8.8.8.8
+microk8s enable dns:8.8.8.8 hostpath-storage host-access ingress metallb:10.64.140.43-10.64.140.49 rbac
+
+sudo snap install juju --classic --channel=3.4/stable
+
+mkdir -p ~/.local/share
+
+microk8s config | juju add-k8s my-k8s --client
+
+juju bootstrap my-k8s uk8sx
+juju add-model kubeflow
+
+
+sudo sysctl fs.inotify.max_user_instances=1280
+sudo sysctl fs.inotify.max_user_watches=655360
+
+# You may need to try this command a few times before it will work
+juju deploy kubeflow --trust #--channel=1.8/stable
+
+# Watch the status of the deployment (15-60 minutes)
+juju status --watch 5s
+
 ```

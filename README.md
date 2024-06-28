@@ -33,6 +33,9 @@ To allow docker to pull images from the local registry, add the following to the
 
 This Kubeflow Platform is from Canonical but isn't working for me. Not sure if it's my version of Ubuntu, or what. I've tried it on 22.04 and 24.04 VMs, and 24.04 server.
 
+1. DNS is not working with the default install. Specifying a DNS server during install helps.
+1. The version of juju needs to be very specific. One of the dependencies is picky.
+
 Kubeflow is a machine learning toolkit for Kubernetes. It provides a way to deploy production-ready ML pipelines. 
 
 Kubeflow has multiple maintained variants, two of which are for any Kubernetes cluster. I chose Canonical's Charmed Kubeflow, which is a Kubernetes operator that deploys Kubeflow on any Kubernetes cluster. The tutorial even uses microk8s.
@@ -56,8 +59,8 @@ microk8s config > ~/.kube/config
 
 # Depending on the microk8s version, dns may already be enabled
 microk8s disable dns
-# microk8s enable dns:8.8.8.8
-microk8s enable dns:8.8.8.8 hostpath-storage host-access ingress metallb:10.64.140.43-10.64.140.49 rbac
+microk8s enable dns:8.8.8.8
+microk8s enable hostpath-storage host-access ingress metallb:10.64.140.43-10.64.140.49 rbac
 
 sudo snap install juju --classic --channel=3.4/stable
 

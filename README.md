@@ -60,7 +60,7 @@ microk8s config > ~/.kube/config
 # Depending on the microk8s version, dns may already be enabled
 microk8s disable dns
 microk8s enable dns:8.8.8.8
-microk8s enable hostpath-storage host-access ingress metallb:10.64.140.43-10.64.140.49 rbac
+microk8s enable hostpath-storage ingress metallb:192.168.50.43-192.168.50.49 rbac
 
 sudo snap install juju --classic --channel=3.4/stable
 
@@ -80,5 +80,16 @@ juju deploy kubeflow --trust #--channel=1.8/stable
 
 # Watch the status of the deployment (15-60 minutes)
 juju status --watch 5s
+
+
+# Lots of waiting later
+
+microk8s kubectl -n kubeflow get svc istio-ingressgateway-workload -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+
+juju config dex-auth public-url=http://192.168.50.43.nip.io
+juju config oidc-gatekeeper public-url=http://192.168.50.43.nip.io
+
+juju config dex-auth static-username=admin
+juju config dex-auth static-password=admin
 
 ```

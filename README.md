@@ -12,6 +12,18 @@ On master node:
 curl -sfL https://get.k3s.io | sh -
 ```
 
+User permissions for kubectl
+
+```bash
+echo "alias kubectl='k3s kubectl'" >> ~/.bashrc
+
+mkdir ~/.kube
+sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/k3s.yaml
+sudo chown -f -R $USER ~/.kube
+echo "export KUBECONFIG=~/.kube/k3s.yaml" >> ~/.bashrc
+```
+
+
 To add worker nodes, on the master node, run:
 
 ```bash
@@ -29,12 +41,27 @@ echo "curl -sfL https://get.k3s.io | K3S_URL=https://$SRV_IP:6443 K3S_TOKEN=$TOK
 # curl -sfL https://get.k3s.io | K3S_URL=https://10.1.10.115:6443 K3S_TOKEN=K106f6d45b47e48fb8da5b1fa3779ad3bebf8ca3e428440c07890f2fb02b00da3f7::server:aceb90efba4ba28f2836a313f0e86a54 sh -
 ```
 
+
 This will get you a barebones cluster.
+
 
 # Set the roles of the worker nodes
 
+By default, all nodes are added without a role. To set the role of a node, run:
+
 ```bash
-sudo kubectl label node <node-name> node-role.kubernetes.io/worker=worker
+kubectl label node <node-name> node-role.kubernetes.io/worker=worker
+```
+
+
+# Helm setup
+
+We also need to install helm. There are other methods, but this is the easier of the two official methods.
+
+```bash
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
 ```
 
 
@@ -45,4 +72,12 @@ sudo kubectl label node <node-name> node-role.kubernetes.io/worker=worker
 helm repo add portainer https://portainer.github.io/k8s/
 helm repo update
 helm upgrade --install --create-namespace -n portainer portainer portainer/portainer --set tls.force=true
+```
+
+Helm will output these commands to get the Portainer URL:
+
+```bash
+export NODE_PORT=$(kubectl get --namespace portainer -o jsonpath="{.spec.ports[0].nodePort}" services portainer)
+export NODE_IP=$(kubectl get nodes --namespace portainer -o jsonpath="{.items[0].status.addresses[0].address}")
+echo https://$NODE_IP:$NODE_PORT
 ```

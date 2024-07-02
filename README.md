@@ -1,12 +1,13 @@
 
+This is just a dumping ground for my notes on setting up a kubernetes cluster. I'm using Ubuntu Server 24.04 LTS for all nodes.
 
 
 
 # k3s
 
-Favorite so far. Not quite as easy as microk8s, but it doesn't seem to include any bloat.
+Favorite so far. Not quite as easy as microk8s, but it doesn't seem to include as much bloat. It's basically a barebones k8s cluster with a relatively easy setup. 
 
-On master node:
+# Install k3s on the master node
 
 ```bash
 curl -sfL https://get.k3s.io | sh -
@@ -21,10 +22,12 @@ mkdir ~/.kube
 sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/k3s.yaml
 sudo chown -f -R $USER ~/.kube
 echo "export KUBECONFIG=~/.kube/k3s.yaml" >> ~/.bashrc
+source ~/.bashrc # or logout and back in or run `bash`
 ```
 
+# Add worker nodes
 
-To add worker nodes, on the master node, run:
+First, get the join command from the master node.
 
 ```bash
 TOKEN=$(sudo cat /var/lib/rancher/k3s/server/node-token)
@@ -42,12 +45,9 @@ echo "curl -sfL https://get.k3s.io | K3S_URL=https://$SRV_IP:6443 K3S_TOKEN=$TOK
 ```
 
 
-This will get you a barebones cluster.
-
-
 # Set the roles of the worker nodes
 
-By default, all nodes are added without a role. To set the role of a node, run:
+By default, nodes are added without a role.
 
 ```bash
 kubectl label node <node-name> node-role.kubernetes.io/worker=worker
@@ -60,10 +60,9 @@ We also need to install helm. There are other methods, but this is the easier of
 
 ```bash
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-chmod 700 get_helm.sh
-./get_helm.sh
+chmod +x get_helm.sh
+./get_helm.sh && rm get_helm.sh
 ```
-
 
 
 # Portainer
@@ -81,3 +80,4 @@ export NODE_PORT=$(kubectl get --namespace portainer -o jsonpath="{.spec.ports[0
 export NODE_IP=$(kubectl get nodes --namespace portainer -o jsonpath="{.items[0].status.addresses[0].address}")
 echo https://$NODE_IP:$NODE_PORT
 ```
+

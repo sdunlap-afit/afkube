@@ -1,0 +1,37 @@
+
+# Ref: 
+#   https://gitlab.com/gitlab-org/charts/gitlab/-/tree/master/examples
+
+# Global configuration
+global:
+  hosts:
+    domainName: 10.1.10.33.nip.io     # Set domain name
+    externalIP: 10.1.10.33            # Set static IP
+  ingress:
+    configureCertmanager: false
+    tls:
+      secretName: gitlab-cert
+
+# GitLab settings
+gitlab:
+  # Set edition (e.g., community, enterprise) 
+  edition: community  # Replace with your desired edition
+
+certmanager:
+  # Set to true to enable cert-manager
+  install: false
+  
+
+# LDAP settings
+# external_auth:
+#   gitlab_ldap:
+#     enabled: true
+#     # Configure LDAP server details here
+#     servers:
+#     - url: ldap://your-ldap-server.com:port  # Replace with your LDAP server details
+#     bind_dn: "cn=your_bind_user,dc=your,dc=domain,dc=com"  # Replace with your bind user details
+#     bind_password: "your_bind_password"  # Replace with your bind password (secure way to store recommended)
+#     active_directory: false  # Set to false for standard LDAP
+#     base_dn: "dc=your,dc=domain,dc=com"  # Replace with your base DN
+#     user_attribute: "uid"  # Replace with the attribute mapped to GitLab username
+    # Additional LDAP configuration options (refer to GitLab documentation for details)

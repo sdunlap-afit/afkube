@@ -7,11 +7,48 @@ This is just a dumping ground for my notes on setting up a kubernetes cluster. I
 
 Favorite so far. Not quite as easy as microk8s, but it doesn't seem to include as much bloat. It's basically a barebones k8s cluster with a relatively easy setup. 
 
+
+## Issues
+
+If you use VMs for k3s, they can be too slow for some standard deployments. If you get errors related to readiness probes or liveliness probes, you may need to increase the timeouts for those specific services.
+
+Example:
+
+```bash
+kubectl edit deployment/gitlab-gitlab-runner -n gitlab
+```
+
+
+
 # Install k3s on the master node
 
 ```bash
-curl -sfL https://get.k3s.io | sh -
+# The built-in load balancer is not ideal. Disable it during install and we'll instal metallb later.
+curl -sfL https://get.k3s.io | sh - --disable servicelb
 ```
+
+Install metallb
+
+```bash
+helm repo add metallb https://metallb.github.io/metallb
+helm install metallb metallb/metallb --namespace metallb-system --create-namespace
+```
+
+Then create a yaml file with the following content and apply it.
+
+```yaml
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: first-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  - 10.1.10.10-10.1.10.50
+```
+
+
+
 
 User permissions for kubectl
 

@@ -2,6 +2,14 @@
 
 # Instructions fro standing up Gitlab on a Kubernetes cluster
 
+3-4 years old:
+
+https://github.com/adavarski/k3s-GitLab-development
+
+2023:
+
+https://dev.to/glasskube/gitlab-on-kubernetes-the-ultimate-deployment-guide-188b
+
 ## Prerequisites
 
 1. A Kubernetes cluster
@@ -13,7 +21,12 @@
 ## Steps
 
 
-
+```bash
+helm repo add gitlab https://charts.gitlab.io/
+helm install gitlab gitlab/gitlab \
+  --set global.hosts.domain=10.1.10.33.nip.io \
+  --set certmanager-issuer.email=me@example.com
+```
 
 1. Obtain cert from Ryan
 
@@ -31,9 +44,10 @@ kubectl create secret tls gitlab-cert --cert=tls.crt --key=tls.key
 
 1. Enable stuff
 
+k3s
+
 ```bash
-microk8s enable rbac hostpath-storage observability metrics-server ingress
-```
+
 
 
 1. Add the Gitlab Helm repository
@@ -66,9 +80,20 @@ kubectl get secret gitlab-gitlab-initial-root-password -n gitlab -ojsonpath='{.d
 Then open a browser and go to `http://localhost:8080` and log in with the root password.
 
 
+# Patch metrics-server
 
+```bash
+kubectl patch deployment metrics-server -n kube-system --type json -p '[
+  { "op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--kubelet-insecure-tls" },
+  { "op": "add", "path": "/spec/template/spec/containers/0/args/-", "value": "--kubelet-preferred-address-types=InternalIP,ExternalIP" }
+]'
+```
 
+# Edit specific service
 
+```bash
+kubectl edit deployment/gitlab-gitlab-runner -n gitlab
+```
 
 # Destroy gitlab 
 
